@@ -1,0 +1,35 @@
+{
+    "details": {
+        "address": {
+            "street": "1C Raymel Crescent",
+            "suburb": "Campbelltown",
+            "state": "SA",
+            "postcode": "5074"
+        },
+        "property_type": "House",
+        "lot_plan": "A1/D96219",
+        "land_size_sqm": 222,
+        "internal_area_sqm": 156,
+        "bed_count": 3,
+        "bath_count": 2,
+        "car_spaces": 2,
+        "year_built": 2015,
+        "has_solar": true,
+        "zoning_code": null,
+        "overlays": [],
+        "is_heritage_listed": false,
+        "last_sale_price": 540000,
+        "last_sale_date": "2020-01-03",
+        "estimated_council_rates": null,
+        "strata_levies_quarterly": null,
+        "estimated_rent_weekly": 750,
+        "nbn_technology": null,
+        "catchment_schools": [
+            {
+                "name": "East Marden Primary School",
+                "level": "Primary",
+                "distance_km": null
+            }
+        ]
+    }
+}
