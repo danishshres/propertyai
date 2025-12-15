@@ -10,7 +10,7 @@ def main():
     """Run the FastAPI server."""
     uvicorn.run(
         "ap_agent_api.infrastructure.api.main:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
         reload=True,  # Set to False in production
         log_level="info"

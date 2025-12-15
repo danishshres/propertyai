@@ -23,8 +23,72 @@ logger = logging.getLogger(__name__)
     "/search",
     response_model=PropertySearchResponse,
     status_code=status.HTTP_200_OK,
-    summary="Search for property details and risk assessment",
-    description="Searches for detailed publicly available information about a property and provides risk assessment"
+    summary="🏠 Search Property Details & Risk Assessment",
+    description="""
+    **Search for comprehensive property information using AI agents**
+    
+    This endpoint performs an intelligent search for detailed property information including:
+    - Property specifications (bedrooms, bathrooms, land size)
+    - Zoning information and planning overlays
+    - School catchment areas and distances  
+    - Financial data (council rates, estimated rent)
+    - Risk assessment (flood, heritage, bushfire)
+    - Infrastructure details (NBN technology)
+    
+    **Example Request:**
+    ```json
+    {
+        "street": "1c Raymel Crescent",
+        "suburb": "Campbelltown", 
+        "state": "SA",
+        "postcode": "5074"
+    }
+    ```
+    
+    **Response includes:**
+    - Complete property details
+    - AI-generated risk analysis
+    - Recommendations for due diligence
+    - Supporting data sources
+    """,
+    response_description="Property search results with comprehensive details and risk assessment",
+    responses={
+        200: {
+            "description": "Successful property search",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "message": "Property search completed successfully",
+                        "data": {
+                            "address": {
+                                "street": "1c Raymel Crescent",
+                                "suburb": "Campbelltown",
+                                "state": "SA", 
+                                "postcode": "5074"
+                            },
+                            "property_type": "House",
+                            "bed_count": 3,
+                            "bath_count": 2,
+                            "risks": [
+                                {
+                                    "title": "Flood risk",
+                                    "severity": "medium",
+                                    "rationale": "Property located in moderate flood zone"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        422: {
+            "description": "Validation error - Invalid address format",
+        },
+        500: {
+            "description": "Internal server error - Search service failed",
+        }
+    }
 )
 async def search_property(address: PropertyAddress) -> PropertySearchResponse:
     """
