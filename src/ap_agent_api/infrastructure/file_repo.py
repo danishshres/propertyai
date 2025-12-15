@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 import os.path, time
+from ap_agent_api.domain.utils import get_property_directory
 
 class PropertyFileRepository:
 
@@ -13,9 +14,8 @@ class PropertyFileRepository:
         """
         Save the property data to a JSON file.
         """
-        output_dir = self.base_dir / (property_address.street.replace(" ", "_"))
-        output_dir.mkdir(parents=True, exist_ok=True)
-
+        # output_dir = self.base_dir / (property_address.street.replace(" ", "_"))
+        output_dir = get_property_directory(property_address)
         file_path = output_dir / "property_details.json"
         output_data = property_results.model_dump()
            
@@ -34,7 +34,8 @@ class PropertyFileRepository:
         Returns:
             dict: Property data if file exists and is within 10 days, None otherwise
         """
-        file_path = self.base_dir / (property_address.street.replace(" ", "_")) / "property_details.json"
+        output_dir = get_property_directory(property_address)
+        file_path = output_dir / "property_details.json"
         
         # Check if file exists
         if not file_path.exists():

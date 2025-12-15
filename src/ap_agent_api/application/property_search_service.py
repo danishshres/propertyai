@@ -10,7 +10,6 @@ from ap_agent_api.config import PROPERTY_RESULTS_DIR
 from agents import Runner
 
 import coloredlogs, logging
-import logging
 logger = logging.getLogger(__name__)
 coloredlogs.install(level='INFO', logger=logger)
 
