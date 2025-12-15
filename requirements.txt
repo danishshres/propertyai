@@ -1,2 +1,5 @@
 openai-agents==0.6.1
 coloredlogs==15.0.1
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
