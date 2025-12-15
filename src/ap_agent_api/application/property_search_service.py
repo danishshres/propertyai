@@ -5,7 +5,7 @@ from ap_agent_api.domain.instructions.property_detail_inst import build_property
 from ap_agent_api.infrastructure.llm_providers.openapi import create_search_agent
 
 from ap_agent_api.infrastructure.file_repo import PropertyFileRepository
-
+from ap_agent_api.config import PROPERTY_RESULTS_DIR
 #this was done using port last time.
 from agents import Runner
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 coloredlogs.install(level='INFO', logger=logger)
 
 async def run_property_search(address: PropertyAddress):
-    
+
     instructions = build_property_detail_inst()
 
     search_agent = create_search_agent(instruction=instructions, output_type=PropertyData)
@@ -34,7 +34,6 @@ async def run_property_search(address: PropertyAddress):
     )
     return search_output
 
-
 if __name__ == '__main__':
     import asyncio
     
@@ -49,6 +48,6 @@ if __name__ == '__main__':
 
     logger.info(f"Property Search Result: {result}")
 
-    file_repo = PropertyFileRepository(base_dir=r"C:\Users\d.shrestha\Desktop\danish_projects\propertyai\results")
+    file_repo = PropertyFileRepository(base_dir=PROPERTY_RESULTS_DIR)
     file_path = file_repo.save(property_address=test_address, property_results=result)
     logger.info(f"Property data saved to: {file_path}")
