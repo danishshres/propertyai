@@ -24,7 +24,7 @@ async def run_property_search(address: PropertyAddress):
     prompt = f"""Search for detailed publicly available information about the property located at:
         {address.street}, {address.suburb}, {address.state} {address.postcode}."""
     
-    logger.info("Running property search ...")
+    logger.info("Running property search and its risk assessment ...")
 
     # search_results = await search_agent.run(prompt)
     search_results =  await Runner.run(search_agent, prompt)
@@ -49,6 +49,6 @@ if __name__ == '__main__':
 
     logger.info(f"Property Search Result: {result}")
 
-    file_repo = PropertyFileRepository(base_dir=r"C:\Users\d.shrestha\Desktop\danish_projects\aussie_property\results")
+    file_repo = PropertyFileRepository(base_dir=r"C:\Users\d.shrestha\Desktop\danish_projects\propertyai\results")
     file_path = file_repo.save(property_address=test_address, property_results=result)
     logger.info(f"Property data saved to: {file_path}")

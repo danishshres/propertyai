@@ -22,22 +22,21 @@ class SeverityLevel(str, Enum):
     HIGH = "high"
     CRITICAL = "critical"
 
-class SourceLink(BaseModel):
-    title: Optional[str] = Field(None, description="Human-friendly title for the source")
-    url: Optional[HttpUrl] = Field(None, description="Link to the web source")
-    retrieved_at: Optional[datetime] = Field(
-        None, description="Timestamp when this source was fetched"
-    )
+# class SourceLink(BaseModel):
+#     title: Optional[str] = Field(None, description="Human-friendly title for the source")
+#     url: Optional[HttpUrl] = Field(None, description="Link to the web source")
+#     retrieved_at: Optional[datetime] = Field(
+#         None, description="Timestamp when this source was fetched"
+#     )
 
 class RiskFactor(BaseModel):
-    id: Optional[str] = Field(None, description="Unique id for the risk factor")
     title: str = Field(..., description="Short title of risk factor (e.g., Flood risk)")
     severity: SeverityLevel = Field(..., description="Severity of the risk")
     rationale: Optional[str] = Field(None, description="Why this risk matters for the property")
     what_to_check: Optional[List[str]] = Field(
         None, description="Concrete checks/next steps the buyer should take"
     )
-    sources: Optional[List[SourceLink]] = Field(None, description="Supporting sources for this risk")
+    # sources: Optional[List[SourceLink]] = Field(None, description="Supporting sources for this risk")
 
 class PropertyData(BaseModel):
     # --- 1. Property Identity ---

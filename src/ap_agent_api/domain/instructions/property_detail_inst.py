@@ -19,6 +19,8 @@ def build_property_detail_inst() -> str:
         Context: This data is for a real estate listing in Australia.
         You must prioritize Australian-specific data sources such as State Planning Portals 
         (e.g., NSW Planning Portal, VicPlan, QLD Globe), NBN Co rollout maps, and local council records.
+        Including the property information also check the major risk factors relevant to the given property location.
+        The risks should be assessed based on their severity and supported with credible sources.
         
         Instructions: 
         Search & Scrape: Search major aggregators (https://www.google.com/search?q=Realestate.com.au,
@@ -72,6 +74,13 @@ def build_property_detail_inst() -> str:
                     "distance_km": float or null
                 }}}}
             ],
+            "risks": [
+                {{{{
+                    "title": str,
+                    "severity": str,
+                    "rationale": str or null,
+                    "what_to_check": [str] or null
+                }}}}
             "marketing_hook": str
         }}}}"""
     

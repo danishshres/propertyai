@@ -8,11 +8,11 @@
         },
         "property_type": "House",
         "lot_plan": "A1/D96219",
-        "land_size_sqm": 222,
-        "internal_area_sqm": 156,
+        "land_size_sqm": 231,
+        "internal_area_sqm": 204,
         "bed_count": 3,
         "bath_count": 2,
-        "car_spaces": 2,
+        "car_spaces": 4,
         "year_built": 2015,
         "has_solar": true,
         "zoning_code": null,
@@ -29,6 +29,40 @@
                 "name": "East Marden Primary School",
                 "level": "Primary",
                 "distance_km": null
+            }
+        ],
+        "risks": [
+            {
+                "title": "Flood risk",
+                "severity": "low-medium",
+                "rationale": "Campbelltown lies near River Torrens, but property not on known floodplain based on suburb description.",
+                "what_to_check": [
+                    "Consult Council flood maps or state planning atlas for precise overlay"
+                ]
+            },
+            {
+                "title": "Bushfire risk",
+                "severity": "low",
+                "rationale": "Inner suburban location with minimal vegetative fuel; low risk by typical standards.",
+                "what_to_check": [
+                    "Refer to South Australia bushfire overlay via Planning and Design Code"
+                ]
+            },
+            {
+                "title": "Heritage overlay risk",
+                "severity": "low",
+                "rationale": "No heritage listing indicated; modern (2015) construction.",
+                "what_to_check": [
+                    "Verify via Council heritage register or SA Property and Planning Atlas"
+                ]
+            },
+            {
+                "title": "Internet connectivity uncertainty",
+                "severity": "medium",
+                "rationale": "Public sources do not specify NBN technology; could affect future upgrades or speeds.",
+                "what_to_check": [
+                    "Check NBN Co rollout map or contact NBN Co with address"
+                ]
             }
         ]
     }
