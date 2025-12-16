@@ -194,6 +194,8 @@ def run(address: PropertyAddress):
         save_image(road_image, output_dir / "road_map.png")
         logger.debug(f"   -> SUCCESS: Contour map image saved in '{output_dir}'")
 
+    return output_dir
+
 # --- MAIN EXECUTION ---
 
 if __name__ == "__main__":
