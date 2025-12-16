@@ -5,6 +5,9 @@ from typing import Dict, List, Tuple
 from matplotlib import pyplot as plt
 import random
 
+import logging
+logger = logging.getLogger(__name__)
+
 # --- CONFIGURATION ---
 CENTER_PIXEL = (200, 200)  # Assuming a 600x600 image center for the property
 RISK_RINGS = [
@@ -92,7 +95,7 @@ def assess_ring_risk(contour_pixels: List[Tuple[int, int]], center: Tuple[int, i
     Calculates the number of contour pixels (elevation changes) within concentric rings
     radiating from the property center.
     """
-    print("2. Assessing Risk Rings...")
+    logger.debug("Assessing Elevation Risk based on Contour Density in Rings...")
     
     total_risk = 0.0
     # Initialize dictionary to store results for each ring
@@ -136,9 +139,7 @@ def extract_contour_lines(binary_img, epsilon=1.5):
         cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_NONE
     )
-
     contour_lines = []
-
     for cnt in contours:
         # Simplify pixel chain → polyline
         simplified = cv2.approxPolyDP(cnt, epsilon, closed=False)
@@ -148,7 +149,6 @@ def extract_contour_lines(binary_img, epsilon=1.5):
 
         if len(line) > 2:  # valid line
             contour_lines.append(line)
-
     return contour_lines
 
 def visualize_colored_contours(contour_lines, image_shape=None):
@@ -178,7 +178,7 @@ def calculate(image_path):
         # 1. Image Processing: Isolate Contours
         isolated_contours = subtract_roads_from_contours(image_path)
 
-        c_lines = extract_contour_lines(isolated_contours, epsilon=2.0)
+        # c_lines = extract_contour_lines(isolated_contours, epsilon=2.0)
 
         # visualize_colored_contours(c_lines, image_shape=isolated_contours.shape)
         
@@ -188,13 +188,13 @@ def calculate(image_path):
         # 3. Risk Assessment: Calculate Contour Density in Rings
         risk_results = assess_ring_risk(contour_pixels, CENTER_PIXEL, RISK_RINGS)
         # risk_results_by_contours = assess_ring_risk_by_contours(c_lines, CENTER_PIXEL, RISK_RINGS)
-        print(risk_results)
+        logger.debug(f"Risk Results: {risk_results}")
         return risk_results
         
     except FileNotFoundError as e:
-        print(f"Fatal Error: {e}. Please ensure '{image_path}' are in the correct directory.")
+        logger.error(f"Fatal Error: {e}. Please ensure '{image_path}' are in the correct directory.")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.error(f"An unexpected error occurred: {e}")
 
 
 # --- MAIN EXECUTION ---
