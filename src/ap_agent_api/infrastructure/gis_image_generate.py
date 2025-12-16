@@ -39,9 +39,9 @@ BOX_SIDE_METERS = 305.748113  # Meters
 # This will be used to get the final image
 CONTOURMAP_SERVICE_EXPORT_URL = "https://lsa1.geohub.sa.gov.au/arcgis/rest/services/BaseMaps/Topographic_wmas/MapServer/export"
 PARCELMAP_SERVICE_EXPORT_URL = "https://lsa1.geohub.sa.gov.au/arcgis/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/export"
+ROAD_SERVICE_EXPORT_URL = "https://lsa2.geohub.sa.gov.au/arcgis/rest/services/SAPPA/PropertyPlanningAtlasV17/MapServer/export"
 # 5. Geocoding Service URL (SA Geohub Geocoding Placeholder)
 GEOCODE_SERVICE_URL = "https://location.sa.gov.au/arcgis/rest/services/Locators/SAGAF_PLUS/GeocodeServer/geocodeAddresses"
-
 
 # --- STEP 1: Get Geocode Address (from x.com / Geohub) ---
 def get_geocode_from_service(address):
@@ -129,7 +129,7 @@ def calculate_bounding_box(wm_x, wm_y, box_side):
 
 
 # --- STEP 4: Use Bounding Box to Get Map Image (from link Y) ---
-def get_map_image(bbox_string, url):
+def get_map_image(bbox_string, url, layers=None):
     """
     Calls the MapServer export function to get the image.
     """
@@ -140,9 +140,10 @@ def get_map_image(bbox_string, url):
         "bbox": bbox_string,         # The calculated bounding box
         "bboxSR": 3857,              # The Spatial Reference of the bbox (Web Mercator)
         # "size": "600,600",           # Output image size in pixels (600x600 for a clear square)
-        "layers":   "show:32",      # Show all layers (modify as needed)
         "f": "image"                 # Output format is image (PNG)
     }
+    if layers:
+        export_params["layers"] = layers
 
     try:
         # Use GET request for image export
@@ -182,20 +183,36 @@ def run(address: PropertyAddress):
         #5. Get Elevation Data (Optional - Not Implemented)
         parcel_image = get_map_image(bbox, PARCELMAP_SERVICE_EXPORT_URL)
 
+        #6. Get Road Map Image
+        road_image = get_map_image(bbox, ROAD_SERVICE_EXPORT_URL, layers="show:17")
+
         # Save images to files
         output_dir = get_property_directory(address)
         
         save_image(contour_image, output_dir / "contour_map.png")
         save_image(parcel_image, output_dir / "parcel_map.png")
+        save_image(road_image, output_dir / "road_map.png")
         logger.debug(f"   -> SUCCESS: Contour map image saved in '{output_dir}'")
 
 # --- MAIN EXECUTION ---
 
 if __name__ == "__main__":
+    # address = PropertyAddress(
+    #     street="1A Ormbsy Street",
+    #     suburb="Widsor Gardens",
+    #     state="SA",
+    #     postcode="5087"
+    # )
+    # address = PropertyAddress(
+    #     street="1C Raymel Crescent",
+    #     suburb="Campbelltown",
+    #     state="SA",
+    #     postcode="5074"
+    # )
     address = PropertyAddress(
-        street="1A Ormbsy Street",
-        suburb="Widsor Gardens",
+        street="47 A Reid Ave",
+        suburb="Felixstow",
         state="SA",
-        postcode="5087"
+        postcode="5070"
     )
     run(address)
