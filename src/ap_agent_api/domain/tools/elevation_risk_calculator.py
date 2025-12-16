@@ -24,7 +24,7 @@ def subtract_roads_from_contours(contour_img_path: str) -> np.ndarray:
     
     Returns: A binary image where white pixels represent contours.
     """
-    print("1. Isolating Contour Lines using Image Subtraction...")
+    logger.debug("Isolating Contour Lines using Image Subtraction...")
     
     # Load images as grayscale
     # NOTE: The images must be the same size and perfectly aligned.
@@ -188,7 +188,7 @@ def calculate(image_path):
         # 3. Risk Assessment: Calculate Contour Density in Rings
         risk_results = assess_ring_risk(contour_pixels, CENTER_PIXEL, RISK_RINGS)
         # risk_results_by_contours = assess_ring_risk_by_contours(c_lines, CENTER_PIXEL, RISK_RINGS)
-        logger.debug(f"Risk Results: {risk_results}")
+        # logger.debug(f"Risk Results: {risk_results}")
         return risk_results
         
     except FileNotFoundError as e:

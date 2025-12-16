@@ -8,11 +8,10 @@ from ap_agent_api.domain.utils import get_property_directory
 
 import coloredlogs, logging
 logger = logging.getLogger(__name__)
-coloredlogs.install(level='DEBUG', logger=logger)
+# coloredlogs.install(level='DEBUG', logger=logger)
 
 
 # --- CONFIGURATION ---
-
 # 1. Address to Geocode
 # ADDRESS = "1C Raymel Crescent, Campbelltown, SA 5074"
 ADDRESS = "1A Ormbsy Street, Widsor Gardens"
@@ -192,7 +191,7 @@ def run(address: PropertyAddress):
         save_image(contour_image, output_dir / "contour_map.png")
         save_image(parcel_image, output_dir / "parcel_map.png")
         save_image(road_image, output_dir / "road_map.png")
-        logger.debug(f"   -> SUCCESS: Contour map image saved in '{output_dir}'")
+        logger.debug(f"SUCCESS: Contour map image saved in '{output_dir}'")
 
     return output_dir
 

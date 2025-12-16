@@ -7,6 +7,9 @@ from ap_agent_api.domain.tools import elevation_risk_calculator as erc
 #TODO : DO this better by checking if images exist and if not 
 # they call the tools to generate them.
 
+import coloredlogs, logging
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='INFO', logger=logger)
 
 if __name__ == "__main__":
 
@@ -23,4 +26,4 @@ if __name__ == "__main__":
     # 2. Check the elevation risk.
     elevation_risk = erc.calculate(output_dir / "contour_map.png")
 
-    print(f"Elevation Risk Assessment: {elevation_risk}")
+    logger.info(f"Elevation Risk Assessment: {elevation_risk}")
