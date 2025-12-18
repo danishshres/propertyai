@@ -5,8 +5,10 @@ from pyproj import CRS, Transformer
 # from ap_agent_api.config import PROPERTY_RESULTS_DIR
 from ap_agent_api.domain.models.property import PropertyAddress
 from ap_agent_api.domain.utils import get_property_directory
-
+import numpy as np
 import coloredlogs, logging
+from curl_cffi import requests as c_requests
+
 logger = logging.getLogger(__name__)
 # coloredlogs.install(level='DEBUG', logger=logger)
 
@@ -39,6 +41,9 @@ BOX_SIDE_METERS = 305.748113  # Meters
 CONTOURMAP_SERVICE_EXPORT_URL = "https://lsa1.geohub.sa.gov.au/arcgis/rest/services/BaseMaps/Topographic_wmas/MapServer/export"
 PARCELMAP_SERVICE_EXPORT_URL = "https://lsa1.geohub.sa.gov.au/arcgis/rest/services/BaseMaps/StreetMapCased_wmas/MapServer/export"
 ROAD_SERVICE_EXPORT_URL = "https://lsa2.geohub.sa.gov.au/arcgis/rest/services/SAPPA/PropertyPlanningAtlasV17/MapServer/export"
+HEIGHT_MAP = "https://en-us.topographic-map.com/?_path=api.maps.getOverlay"
+
+
 # 5. Geocoding Service URL (SA Geohub Geocoding Placeholder)
 GEOCODE_SERVICE_URL = "https://location.sa.gov.au/arcgis/rest/services/Locators/SAGAF_PLUS/GeocodeServer/geocodeAddresses"
 
@@ -121,10 +126,9 @@ def calculate_bounding_box(wm_x, wm_y, box_side):
     xmax = wm_x + buffer
     # YMax = Center Y + Buffer
     ymax = wm_y + buffer
-    
-    bbox_string = f"{xmin},{ymin},{xmax},{ymax}"
-    logger.debug(f"   -> Bounding Box: {bbox_string}")
-    return bbox_string
+    # bbox_string = f"{xmin},{ymin},{xmax},{ymax}"
+    # logger.debug(f"   -> Bounding Box: {bbox_string}")
+    return xmin, ymin, xmax, ymax
 
 
 # --- STEP 4: Use Bounding Box to Get Map Image (from link Y) ---
@@ -154,6 +158,54 @@ def get_map_image(bbox_string, url, layers=None):
     except requests.exceptions.RequestException as e:
         print(f"   -> ERROR requesting map image: {e}")
 
+def web_mercator_to_latlon(x, y):
+    """
+    Converts a single coordinate pair from Web Mercator (EPSG:3857) 
+    to Latitude/Longitude (WGS84 or EPSG:4326).
+    """
+    # Earth radius in meters, as used in the Web Mercator projection
+    R = 6378137.0  
+    # Longitude (lambda) conversion: lambda = (X / R) * (180 / pi)
+    lon = np.degrees(x / R)
+    # Latitude (phi) conversion: phi = arctan(sinh(Y / R)) * (180 / pi)
+    lat = np.degrees(np.arctan(np.sinh(y / R)))
+    return lat, lon
+
+def topology_layer(bbox):
+    lat_0, lon_0 = web_mercator_to_latlon(bbox[0], bbox[1])
+    lat_1, lon_1 = web_mercator_to_latlon(bbox[2], bbox[3])
+    # url = HEIGHT_MAP + f" &southLatitude={lat_0}&westLongitude=lon_0&northLatitude={lat_1}&eastLongitude={lon_1}&zoom=17"
+    params = {
+        "southLatitude": lat_0,
+        "westLongitude": lon_0,
+        "northLatitude": lat_1,
+        "eastLongitude": lon_1,
+        "zoom": 17
+    }
+    try:
+        # headers = {
+        #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        #     "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        #     "Referer": "https://en-us.topographic-map.com/",
+        #     "Accept-Language": "en-US,en;q=0.9"
+        # }
+        session = c_requests.Session()
+        # Use GET request for image export
+        response = session.get(
+            HEIGHT_MAP,
+            # headers=headers,
+            params=params, 
+            impersonate="chrome",
+            # impersonate="chrome",
+            timeout=20)
+        response.raise_for_status()
+        return response.content
+        
+    except requests.exceptions.RequestException as e:
+        print(f"   -> ERROR requesting map image: {e}")
+
+
+
 def save_image(image_data, filename):
     """
     Saves the binary image data to a file.
@@ -175,15 +227,19 @@ def run(address: PropertyAddress):
 
         # 3. Calculate Bounding Box
         bbox = calculate_bounding_box(wm_x, wm_y, BOX_SIDE_METERS)
-        
+        bbox_str = f"{bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}"
+
+        # get topology layer
+        topology_image = topology_layer(bbox)
+
         # 4. Get Contour Map Image
-        contour_image = get_map_image(bbox, CONTOURMAP_SERVICE_EXPORT_URL)
+        contour_image = get_map_image(bbox_str, CONTOURMAP_SERVICE_EXPORT_URL)
 
         #5. Get Elevation Data (Optional - Not Implemented)
-        parcel_image = get_map_image(bbox, PARCELMAP_SERVICE_EXPORT_URL)
+        parcel_image = get_map_image(bbox_str, PARCELMAP_SERVICE_EXPORT_URL)
 
         #6. Get Road Map Image
-        road_image = get_map_image(bbox, ROAD_SERVICE_EXPORT_URL, layers="show:17")
+        road_image = get_map_image(bbox_str, ROAD_SERVICE_EXPORT_URL, layers="show:17")
 
         # Save images to files
         output_dir = get_property_directory(address)
@@ -191,6 +247,7 @@ def run(address: PropertyAddress):
         save_image(contour_image, output_dir / "contour_map.png")
         save_image(parcel_image, output_dir / "parcel_map.png")
         save_image(road_image, output_dir / "road_map.png")
+        save_image(topology_image, output_dir / "topology_map.png")
         logger.debug(f"SUCCESS: Contour map image saved in '{output_dir}'")
 
     return output_dir
@@ -198,22 +255,22 @@ def run(address: PropertyAddress):
 # --- MAIN EXECUTION ---
 
 if __name__ == "__main__":
-    # address = PropertyAddress(
-    #     street="1A Ormbsy Street",
-    #     suburb="Widsor Gardens",
-    #     state="SA",
-    #     postcode="5087"
-    # )
+    address = PropertyAddress(
+        street="1A Ormbsy Street",
+        suburb="Widsor Gardens",
+        state="SA",
+        postcode="5087"
+    )
     # address = PropertyAddress(
     #     street="1C Raymel Crescent",
     #     suburb="Campbelltown",
     #     state="SA",
     #     postcode="5074"
     # )
-    address = PropertyAddress(
-        street="47 A Reid Ave",
-        suburb="Felixstow",
-        state="SA",
-        postcode="5070"
-    )
+    # address = PropertyAddress(
+    #     street="47 A Reid Ave",
+    #     suburb="Felixstow",
+    #     state="SA",
+    #     postcode="5070"
+    # )
     run(address)
