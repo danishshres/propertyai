@@ -90,7 +90,7 @@ def get_contour_pixels(isolated_contours: np.ndarray) -> List[Tuple[int, int]]:
 
 # --- RISK ASSESSMENT FUNCTION ---
 
-def assess_ring_risk(contour_pixels: List[Tuple[int, int]], center: Tuple[int, int], rings: List[Tuple[int, int, int, str]]) -> Tuple[Dict[str, Dict], float]:
+def assess_ring_risk(contour_pixels: List[Tuple[int, int]], center: Tuple[int, int], rings: List[Tuple[int, int, int, str]]):
     """
     Calculates the number of contour pixels (elevation changes) within concentric rings
     radiating from the property center.
@@ -131,7 +131,10 @@ def assess_ring_risk(contour_pixels: List[Tuple[int, int]], center: Tuple[int, i
         if ring_areas[name] > 0:
             data["density"] = data["count"] / ring_areas[name]
             total_risk += data["density"]
-    return risk_data, min(total_risk, 100)  # Cap total risk at 100
+
+    risk_data["Total Risk Score"] = min(total_risk, 100)
+    return risk_data  # Cap total risk at 100
+    # return 
 
 def extract_contour_lines(binary_img, epsilon=1.5):
     contours, _ = cv2.findContours(

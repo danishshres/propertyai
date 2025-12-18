@@ -1,0 +1,15 @@
+{
+    "High Risk (Immediate Property)": {
+        "count": 542,
+        "density": 19.169328701290507
+    },
+    "Moderate Risk (Adjacent Properties)": {
+        "count": 2189,
+        "density": 6.334366735057435
+    },
+    "Low Risk (Neighborhood Scale)": {
+        "count": 13933,
+        "density": 3.2998598543145503
+    },
+    "Total Risk Score": 28.80355529066249
+}

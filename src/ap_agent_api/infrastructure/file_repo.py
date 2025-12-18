@@ -7,21 +7,16 @@ from ap_agent_api.domain.utils import get_property_directory
 
 class PropertyFileRepository:
 
-    def __init__(self, base_dir: str):
-        self.base_dir = Path(base_dir)
-
-    def save(self, property_address, property_results) -> str:
+    def save(self, property_address, data, filename) -> str:
         """
         Save the property data to a JSON file.
         """
         # output_dir = self.base_dir / (property_address.street.replace(" ", "_"))
         output_dir = get_property_directory(property_address)
-        file_path = output_dir / "property_details.json"
-        output_data = property_results.model_dump()
-           
+        file_path = output_dir / filename
+        # output_data = property_results.model_dump()
         with open(file_path, "w") as f:
-            json.dump(output_data, f)
-
+            json.dump(data, f)
         return str(file_path)
     
     def load(self, property_address):
