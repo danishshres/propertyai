@@ -5,6 +5,7 @@ API response models.
 from pydantic import BaseModel, Field
 from typing import Optional, Any, List, Dict
 from ap_agent_api.domain.models.property import PropertyData
+from ap_agent_api.domain.models.risks import ElevationRiskAssessment
 
 class BaseResponse(BaseModel):
     """Base response model for all API responses."""
@@ -22,6 +23,11 @@ class PropertySearchResponse(BaseResponse):
     """Response model for property search endpoint."""
     success: bool = True
     data: Optional[PropertyData] = None
+
+class ElevationRiskResponse(BaseResponse):
+    """Response model for elevation risk assessment endpoint."""
+    success: bool = True
+    data: Optional[ElevationRiskAssessment] = None
 
 class ValidationErrorResponse(BaseResponse):
     """Validation error response model."""

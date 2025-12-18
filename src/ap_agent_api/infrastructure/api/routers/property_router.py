@@ -106,10 +106,11 @@ async def search_property(address: PropertyAddress) -> PropertySearchResponse:
     try:
         logger.info(f"Starting property search for: {address.street}, {address.suburb}, {address.state}")
         
-        file_repo = PropertyFileRepository(base_dir=str(PROPERTY_RESULTS_DIR))
+        file_repo = PropertyFileRepository()
+        filename = 'property_details.json'
 
         # check if results already exist
-        property_data = file_repo.load(address)
+        property_data = file_repo.load(address, filename=filename)
         
         if property_data:
             logger.info(f"Property data loaded from existing file for: {address.street}")
@@ -123,7 +124,7 @@ async def search_property(address: PropertyAddress) -> PropertySearchResponse:
         # Call the application service
         property_data = await run_property_search(address)
 
-        file_path = file_repo.save(property_address=address, property_results=property_data)
+        file_path = file_repo.save(property_address=address, data=property_data.model_dump(), filename=filename)
         
         logger.info(f"Property search completed successfully for: {address.street} and saved to {file_path}")
         

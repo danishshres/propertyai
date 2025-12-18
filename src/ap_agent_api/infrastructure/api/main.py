@@ -11,7 +11,7 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redi
 from fastapi.staticfiles import StaticFiles
 import logging
 
-from .routers import property_router
+from .routers import property_router, elevation_risk_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -80,6 +80,12 @@ app.include_router(
     property_router.router,
     prefix="",
     tags=["search"]
+)
+
+app.include_router(
+    elevation_risk_router.router,
+    prefix="/risks",
+    tags=["risks"]
 )
 
 @app.get("/", tags=["health"])

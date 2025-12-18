@@ -19,7 +19,7 @@ class PropertyFileRepository:
             json.dump(data, f)
         return str(file_path)
     
-    def load(self, property_address):
+    def load(self, property_address, filename):
         """
         Load property data from file if it exists and was created within the last 10 days.
         
@@ -30,7 +30,7 @@ class PropertyFileRepository:
             dict: Property data if file exists and is within 10 days, None otherwise
         """
         output_dir = get_property_directory(property_address)
-        file_path = output_dir / "property_details.json"
+        file_path = output_dir / filename
         
         # Check if file exists
         if not file_path.exists():
